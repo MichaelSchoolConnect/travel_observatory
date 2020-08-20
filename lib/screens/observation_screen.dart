@@ -36,7 +36,7 @@ class ObservationScreenState extends State<ObservationScreen> {
     return new Scaffold(
         appBar: new AppBar(
           title: new Text(
-            "Load local JSON file",
+            "Observations",
             style: new TextStyle(color: Colors.white),
           ),
         ),
@@ -46,10 +46,43 @@ class ObservationScreenState extends State<ObservationScreen> {
             child: new FutureBuilder(
                 future: loadAsset(),
                 builder: (context, snapshot) {
-                  List<Animals> animals = parseJson(snapshot.data.toString());
-                  return animals.isNotEmpty
-                      ? getTripListView()
-                      : new Center(child: new CircularProgressIndicator());
+                  var tagsJson = jsonDecode(snapshot.data);
+                  List tags = tagsJson != null ? List.from(tagsJson) : null;
+
+                  print(tags.toString());
+
+                  return new ListView.builder(
+                      itemCount: tags == null ? 0 : tags.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return new Card(
+                          child: new Container(
+                            child: new Center(
+                                child: new Column(
+                              // Stretch the cards in horizontal axis
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: <Widget>[
+                                new Text(
+                                  // Read the name field value and set it in the Text widget
+                                  tags[index]['id'].toString(),
+                                  // set some style to text
+                                  style: new TextStyle(
+                                      fontSize: 20.0,
+                                      color: Colors.lightBlueAccent),
+                                ),
+                                new Text(
+                                  // Read the name field value and set it in the Text widget
+                                  tags[index]['animal'].toString(),
+                                  // set some style to text
+                                  style: new TextStyle(
+                                      fontSize: 20.0,
+                                      color: Colors.lightBlueAccent),
+                                ),
+                              ],
+                            )),
+                            padding: const EdgeInsets.all(15.0),
+                          ),
+                        );
+                      });
                 }),
           ),
         ));
@@ -59,8 +92,7 @@ class ObservationScreenState extends State<ObservationScreen> {
     if (response == null) {
       return [];
     }
-    final parsed =
-        json.decode(response.toString()).cast<Map<String, dynamic>>();
+    final parsed = json.decode(response).cast<Map<String, dynamic>>();
     return parsed.map<Animals>((json) => new Animals.fromJson(json)).toList();
   }
 
@@ -86,8 +118,8 @@ class ObservationScreenState extends State<ObservationScreen> {
     }
   }
 
-  ListView getTripListView() {
-    print('getTripListView');
+  ListView getObservationListView() {
+    print('getObservationListView');
     return ListView.builder(
       shrinkWrap: true,
       itemCount: count,

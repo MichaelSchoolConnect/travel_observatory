@@ -74,10 +74,12 @@ class _TripScreenState extends State<TripScreen> {
       ),
       body: getTripListView(),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: _saveTrip,
-        tooltip: 'Save trip',
-        child: Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          _saveTrip();
+        },
+        icon: Icon(Icons.save),
+        label: Text("Save trip"),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

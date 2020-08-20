@@ -1,12 +1,22 @@
-{
+[{
+    "id": 0,
+    "animal": "Dolphin"
+}, {
+    "id": 1,
+    "animal": "Lion"
+}, {
     "id": 2,
-    "dolphin": "Dolphin",
-    "shark": "Shark",
-    "Eel": "Eel",
-    "sea_lion": "Sea Lion",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter application.",
-    "orientation": "portrait-primary",
-    "prefer_related_applications": false
-}
+    "animal": "Cat"
+}, {
+    "id": 3,
+    "animal": "Snake"
+}, {
+    "id": 4,
+    "animal": "Bird"
+}, {
+    "id": 5,
+    "animal": "Fish"
+}, {
+    "id": 6,
+    "animal": "Dog"
+}]

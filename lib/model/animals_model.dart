@@ -1,11 +1,10 @@
 class Animals {
+  final String id;
   final String animalName;
 
-  Animals({this.animalName});
+  Animals({this.id, this.animalName});
 
-  factory Animals.fromJson(Map<String, dynamic> json) {
-    return new Animals(
-      animalName: json['animalName'] as String,
-    );
-  }
+  Animals.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        animalName = json['animalName'];
 }
