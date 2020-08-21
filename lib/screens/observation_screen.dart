@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:travel_observatory/database/travel_observatory_db.dart';
-import 'package:travel_observatory/location/get_gps_coordinates.dart';
-import 'package:travel_observatory/model/animals_model.dart';
 import 'package:travel_observatory/model/observation_model.dart';
+
+import '../snackbar.dart';
 
 class ObservationScreen extends StatefulWidget {
   @override
@@ -13,22 +12,26 @@ class ObservationScreen extends StatefulWidget {
 }
 
 class ObservationScreenState extends State<ObservationScreen> {
-  TravelObservatoryDb _travelObservatoryDb = new TravelObservatoryDb();
-  GetGPSCoordinates gpsCoordinates;
+  TravelObservatoryDb _travelObservatoryDb;
+  TextEditingController sizeOfAnimalTextController;
+  TextEditingController numOfAnimalsTextController;
 
-  List<Animals> animalsList;
-  ObservationScreenState({Key key, this.animalsList});
-
-  List data;
-  List<Observation> observatoryList;
-  int count = 0;
+  List tags;
 
   @override
   void initState() {
     super.initState();
-    /*WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await loadAsset();
-    });*/
+    _travelObservatoryDb = new TravelObservatoryDb();
+    sizeOfAnimalTextController = TextEditingController();
+    numOfAnimalsTextController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    sizeOfAnimalTextController.dispose();
+    numOfAnimalsTextController.dispose();
+    super.dispose();
   }
 
   @override
@@ -40,65 +43,110 @@ class ObservationScreenState extends State<ObservationScreen> {
             style: new TextStyle(color: Colors.white),
           ),
         ),
-        body: new Container(
-          child: new Center(
-            // Use future builder and DefaultAssetBundle to load the local JSON file
-            child: new FutureBuilder(
-                future: loadAsset(),
-                builder: (context, snapshot) {
-                  var tagsJson = jsonDecode(snapshot.data);
-                  List tags = tagsJson != null ? List.from(tagsJson) : null;
-
-                  print(tags.toString());
-
-                  return new ListView.builder(
-                      itemCount: tags == null ? 0 : tags.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return new Card(
-                          child: new Container(
-                            child: new Center(
-                                child: new Column(
-                              // Stretch the cards in horizontal axis
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                new Text(
-                                  // Read the name field value and set it in the Text widget
-                                  tags[index]['id'].toString(),
-                                  // set some style to text
-                                  style: new TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.lightBlueAccent),
-                                ),
-                                new Text(
-                                  // Read the name field value and set it in the Text widget
-                                  tags[index]['animal'].toString(),
-                                  // set some style to text
-                                  style: new TextStyle(
-                                      fontSize: 20.0,
-                                      color: Colors.lightBlueAccent),
-                                ),
-                              ],
-                            )),
-                            padding: const EdgeInsets.all(15.0),
-                          ),
-                        );
-                      });
-                }),
-          ),
-        ));
+        body: setContentView());
   }
 
-  List<Animals> parseJson(String response) {
-    if (response == null) {
-      return [];
-    }
-    final parsed = json.decode(response).cast<Map<String, dynamic>>();
-    return parsed.map<Animals>((json) => new Animals.fromJson(json)).toList();
+  Widget setContentView() {
+    return Container(
+      child: new Center(
+        // Use future builder and DefaultAssetBundle to load the local JSON file
+        child: new FutureBuilder(
+            future: loadAsset(),
+            builder: (context, snapshot) {
+              var tagsJson = jsonDecode(snapshot.data);
+              tags = tagsJson != null ? List.from(tagsJson) : null;
+
+              print(tags.toString());
+
+              return new ListView.builder(
+                  itemCount: tags == null ? 0 : tags.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      child: ListTile(
+                        title: Text(tags[index]['id'].toString()),
+                        subtitle: Text(tags[index]['animal'].toString()),
+                        onTap: () {
+                          _displayDialog(context, index);
+                        },
+                      ),
+                    );
+                  });
+            }),
+      ),
+    );
+  }
+
+  Widget _drawer() {
+    return Drawer(
+      // Add a ListView to the drawer. This ensures the user can scroll
+      // through the options in the drawer if there isn't enough vertical
+      // space to fit everything.
+      child: ListView(
+        // Important: Remove any padding from the ListView.
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            child: Text('Drawer Header'),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+          ),
+          ListTile(
+            title: Text('Item 1'),
+            onTap: () {
+              // Update the state of the app
+              // ...
+              // Then close the drawer
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: Text('Item 2'),
+            onTap: () {
+              // Update the state of the app
+              // ...
+              // Then close the drawer
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget listLayout(List tags, int index) {
+    return new Card(
+      child: new Container(
+        child: new Center(
+            child: new Column(
+          // Stretch the cards in horizontal axis
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            new Text(
+              // Read the name field value and set it in the Text widget
+              tags[index]['id'].toString(),
+              // set some style to text
+              style:
+                  new TextStyle(fontSize: 20.0, color: Colors.lightBlueAccent),
+            ),
+            new Text(
+              // Read the name field value and set it in the Text widget
+              tags[index]['animal'].toString(),
+              // set some style to text
+              style:
+                  new TextStyle(fontSize: 20.0, color: Colors.lightBlueAccent),
+            ),
+          ],
+        )),
+        padding: const EdgeInsets.all(15.0),
+      ),
+    );
   }
 
   Future<String> loadAsset() async {
     //Allows us to read at runtime.
-    return await DefaultAssetBundle.of(context).loadString('assets/mani.json');
+    return await DefaultAssetBundle.of(context)
+        .loadString('assets/animals.json');
   }
 
   void insertObservation() async {
@@ -118,85 +166,35 @@ class ObservationScreenState extends State<ObservationScreen> {
     }
   }
 
-  ListView getObservationListView() {
-    print('getObservationListView');
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: count,
-      itemBuilder: (BuildContext context, int position) {
-        return Card(
-          color: Colors.white,
-          elevation: 2.0,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.amber,
-              child: Text(this.animalsList[position].animalName),
-            ),
-            title: Text(this.animalsList[position].animalName,
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text(this.animalsList[position].animalName),
-            trailing: Row(
+  _displayDialog(BuildContext context, int index) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(tags[index]['animal'].toString()),
+            content: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                GestureDetector(
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                  ),
-                  onTap: () {
-                    //_delete(context, todoList[position]);
-                  },
+                TextField(
+                  controller: sizeOfAnimalTextController,
+                  decoration: InputDecoration(hintText: "Size of animal"),
+                ),
+                TextField(
+                  controller: numOfAnimalsTextController,
+                  decoration: InputDecoration(hintText: "No. of animal"),
                 ),
               ],
             ),
-            onTap: () {
-              debugPrint("ListTile Tapped");
-              // navigateToDetail(this.todoList[position], 'Edit Todo');
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  void updateListView() {
-    print('updateListView');
-    final Future<Database> dbFuture = _travelObservatoryDb.initializeDatabase();
-    dbFuture.then((database) {
-      Future<List<Observation>> tripListFuture =
-          _travelObservatoryDb.getObservations() as Future<List<Observation>>;
-      tripListFuture.then((tripList) {
-        setState(() {
-          this.observatoryList = tripList;
-          this.count = tripList.length;
-        });
-        print(tripList);
-      });
-    });
-  }
-
-  Widget animalsWidget() {
-    return ListView.builder(
-        itemCount: animalsList == null ? 0 : animalsList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return new Card(
-            child: new Container(
-              child: new Center(
-                  child: new Column(
-                // Stretch the cards in horizontal axis
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  new Text(
-                    // Read the name field value and set it in the Text widget
-                    animalsList[index].animalName,
-                    // set some style to text
-                    style: new TextStyle(
-                        fontSize: 20.0, color: Colors.lightBlueAccent),
-                  ),
-                ],
-              )),
-              padding: const EdgeInsets.all(15.0),
-            ),
+            actions: <Widget>[
+              FlatButton(
+                child: new Text('Save'),
+                onPressed: () {
+                  print(sizeOfAnimalTextController.text);
+                  SnackBarPage();
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
           );
         });
   }

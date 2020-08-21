@@ -48,22 +48,27 @@ class TravelObservatoryDb {
   }
 
   void _createDb(Database db, int newVersion) async {
+    //Create Trip table.
     await db.execute(
       "CREATE TABLE $tableName(id INTEGER PRIMARY KEY, "
       "$date TEXT, $time TEXT, $gpsCoordinates TEXT)",
     );
 
+    //Create Observation table.
     await db.execute(
-      "CREATE TABLE $observatoryTable(id INTEGER PRIMARY KEY, "
-      "$date TEXT, $time TEXT, $gpsCoordinates TEXT)",
+      "CREATE TABLE $observatoryTable("
+      "id INTEGER PRIMARY KEY, "
+      "$date TEXT, "
+      "$time TEXT, "
+      "$gpsCoordinates TEXT, "
+      "FOREIGN KEY($date) REFERENCES $tableName(id))",
     );
   }
 
-  // Fetch Operation: Get all todo objects from database
-  Future<List<Map<String, dynamic>>> getTodoMapList() async {
+  // Fetch Operation: Get all trip objects from database
+  Future<List<Map<String, dynamic>>> getTripList() async {
     Database db = await this.database;
 
-//		var result = await db.rawQuery('SELECT * FROM $todoTable order by $colTitle ASC');
     var result = await db.query(tableName, orderBy: '$id ASC');
     return result;
   }
@@ -73,8 +78,8 @@ class TravelObservatoryDb {
     // Get a reference to the database.
     final Database db = await database;
 
-    // Insert the Dog into the correct table. Also specify the
-    // `conflictAlgorithm`. In this case, if the same dog is inserted
+    // Insert the Trip into the correct table. Also specify the
+    // `conflictAlgorithm`. In this case, if the same trip is inserted
     // multiple times, it replaces the previous data.
     var result = await db.insert(
       tableName,
@@ -85,14 +90,14 @@ class TravelObservatoryDb {
     return result;
   }
 
-  // Insert Operation: Insert a trip object to database
+  // Insert Operation: Insert a observation object to database
   Future<int> insertObservatory(Observation observation) async {
     print('inserted obs');
     // Get a reference to the database.
     final Database db = await database;
 
-    // Insert the Dog into the correct table. Also specify the
-    // `conflictAlgorithm`. In this case, if the same dog is inserted
+    // Insert the Observation into the correct table. Also specify the
+    // `conflictAlgorithm`. In this case, if the same observation is inserted
     // multiple times, it replaces the previous data.
     var result = await db.insert(
       observatoryTable,
@@ -139,14 +144,14 @@ class TravelObservatoryDb {
     return result;
   }
 
-  // Delete Operation: Delete a todo object from database
-  Future<int> deleteTodo(int id) async {
+  // Delete Operation: Delete a trip object from database
+  Future<int> deleteTrip(int id) async {
     var db = await this.database;
     int result = await db.rawDelete('DELETE FROM $tableName WHERE id = $id');
     return result;
   }
 
-  // Get number of todo objects in database
+  // Get number of trip objects in database
   Future<int> getCount() async {
     Database db = await this.database;
     List<Map<String, dynamic>> x =

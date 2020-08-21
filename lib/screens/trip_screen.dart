@@ -8,15 +8,6 @@ import 'package:travel_observatory/model/trip_model.dart';
 class TripScreen extends StatefulWidget {
   TripScreen({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -29,7 +20,7 @@ class _TripScreenState extends State<TripScreen> {
   SaveFileLocally saveFileLocally = new SaveFileLocally();
   GetGPSCoordinates gpsCoordinates;
 
-  BuildContext context;
+  BuildContext buildContext;
 
   String coordinates;
   String finalDate = '';
@@ -55,7 +46,7 @@ class _TripScreenState extends State<TripScreen> {
 
   @override
   Widget build(BuildContext context) {
-    this.context = context;
+    this.buildContext = context;
     if (tripList == null) {
       tripList = List<Trip>();
       updateListView();
@@ -145,18 +136,6 @@ class _TripScreenState extends State<TripScreen> {
     });
   }
 
-  _getCurrentDate() {
-    var date = new DateTime.now().toString();
-
-    var dateParse = DateTime.parse(date);
-
-    var formattedDate = "${dateParse.day}-${dateParse.month}-${dateParse.year}";
-
-    setState(() {
-      finalDate = formattedDate.toString();
-    });
-  }
-
   String _convertDate() {
     var date = new DateTime.now().toString();
     var dateParse = DateTime.parse(date);
@@ -190,10 +169,10 @@ class _TripScreenState extends State<TripScreen> {
 
     if (result != 0) {
       // Success
-      _showAlertDialog('Status', 'Trip info saved successfully');
+      _showToast();
     } else {
       // Failure
-      _showAlertDialog('Status', 'Problem saving trip info');
+      _showToast();
     }
   }
 
@@ -204,11 +183,9 @@ class _TripScreenState extends State<TripScreen> {
     });
   }
 
-  void _showAlertDialog(String title, String message) {
-    AlertDialog alertDialog = AlertDialog(
-      title: Text(title),
-      content: Text(message),
-    );
-    showDialog(context: context, builder: (_) => alertDialog);
+  void _showToast() {
+    /* Scaffold.of(buildContext)
+        .showSnackBar(SnackBar(content: Text('Trip saved')));*/
+    SnackBar(content: Text('Trip saved'));
   }
 }

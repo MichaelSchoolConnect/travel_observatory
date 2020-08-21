@@ -12,7 +12,7 @@ class SaveFileLocally {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/file.json');
+    return File('$path/file.txt');
   }
 
   Future<int> readFile() async {
@@ -29,12 +29,14 @@ class SaveFileLocally {
     }
   }
 
-  Future<File> writeFile(String file) async {
+  Future<File> writeFile(String str) async {
     final file = await _localFile;
 
-    print('File saved');
+    if (str != null) {
+      print('File saved');
+    }
 
     // Write the file
-    return file.writeAsString('$file');
+    return file.writeAsString('$str');
   }
 }
