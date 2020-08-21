@@ -4,6 +4,7 @@ import 'package:travel_observatory/database/travel_observatory_db.dart';
 import 'package:travel_observatory/local_storage/save_file_locally.dart';
 import 'package:travel_observatory/location/get_gps_coordinates.dart';
 import 'package:travel_observatory/model/trip_model.dart';
+import 'package:travel_observatory/screens/observation_screen.dart';
 
 class TripScreen extends StatefulWidget {
   TripScreen({Key key, this.title}) : super(key: key);
@@ -18,6 +19,7 @@ class _TripScreenState extends State<TripScreen> {
   TravelObservatoryDb _travelObservatoryDb = new TravelObservatoryDb();
   //Save file in the local directory.
   SaveFileLocally saveFileLocally = new SaveFileLocally();
+
   GetGPSCoordinates gpsCoordinates;
 
   BuildContext buildContext;
@@ -62,12 +64,22 @@ class _TripScreenState extends State<TripScreen> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text('Trips'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.remove_red_eye),
+            tooltip: 'View observations',
+            onPressed: () {
+              _goToObservationScreen();
+            },
+          ),
+        ],
       ),
-      body: setContent(),
+
+      body: _buildList(),
 
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          _saveTrip();
+          _startTrip();
         },
         icon: Icon(Icons.save),
         label: Text("Start trip"),
@@ -75,22 +87,24 @@ class _TripScreenState extends State<TripScreen> {
     );
   }
 
-  ListView setContent() {
+  //Renders each of the data points as individual list items.
+  ListView _buildList() {
     print('setting content');
     return ListView.builder(
       shrinkWrap: true,
-      itemCount: count,
+      itemCount: tripList == null ? 0 : tripList.length,
       itemBuilder: (BuildContext context, int position) {
-        if (tripList.length == 0) {
-          return CircularProgressIndicator();
+        if (tripList.length == null) {
+          return Center(child: Text('...'));
         } else {
-          return listItem(position);
+          return _listItem(position);
         }
       },
     );
   }
 
-  Widget listItem(int position) {
+  //build each item in the list
+  Widget _listItem(int position) {
     return Card(
       color: Colors.white,
       elevation: 2.0,
@@ -119,7 +133,6 @@ class _TripScreenState extends State<TripScreen> {
         ),
         onTap: () {
           debugPrint("ListTile Tapped");
-          // navigateToDetail(this.todoList[position], 'Edit Todo');
         },
       ),
     );
@@ -150,20 +163,16 @@ class _TripScreenState extends State<TripScreen> {
     return "${dateParse.day}-${dateParse.month}-${dateParse.year}";
   }
 
-  // Save data to database
+  // Create a Trip and add it to the trips table.
   void _insertTrip() async {
-    //Date
     var date = _convertDate();
-    //Time
     var time = new DateTime.now();
+    int result;
 
-// Create a Trip and add it to the trips table.
     final trip = Trip(
         date: date.toString(),
         time: time.toString(),
         gpsCoordinates: gpsCoordinates.getCoordinates().toString());
-
-    int result;
 
     if (trip.id != null) {
       // Case 1: Update operation
@@ -177,23 +186,47 @@ class _TripScreenState extends State<TripScreen> {
 
     if (result != 0) {
       // Success
-      _showToast();
+      print('success');
+      updateListView();
     } else {
       // Failure
-      _showToast();
+      print('failure');
     }
   }
 
-  void _saveTrip() {
+  void _startTrip() {
     setState(() {
-      debugPrint("Save button clicked");
       _insertTrip();
+      displayModalBottomSheet(context);
     });
   }
 
-  void _showToast() {
-    /* Scaffold.of(buildContext)
-        .showSnackBar(SnackBar(content: Text('Trip saved')));*/
-    SnackBar(content: Text('Trip saved'));
+  void displayModalBottomSheet(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                    leading: new Icon(Icons.music_note),
+                    title: new Text('Music'),
+                    onTap: () => {}),
+                new ListTile(
+                  leading: new Icon(Icons.videocam),
+                  title: new Text('Video'),
+                  onTap: () => {},
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  void _goToObservationScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ObservationScreen()),
+    );
   }
 }

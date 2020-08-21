@@ -29,14 +29,14 @@ class SaveFileLocally {
     }
   }
 
-  Future<File> writeFile(String str) async {
+  Future<File> writeFile(String file) async {
     final file = await _localFile;
 
-    if (str != null) {
+    if (file != null) {
       print('File saved');
     }
 
     // Write the file
-    return file.writeAsString('$str');
+    return file.writeAsString('$file');
   }
 }

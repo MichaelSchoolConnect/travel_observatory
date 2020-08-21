@@ -4,10 +4,11 @@ import 'package:travel_observatory/screens/trip_screen.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: ObservationScreen(), // becomes the route named '/'
-    /*routes: <String, WidgetBuilder>{
+    debugShowCheckedModeBanner: false,
+    home: TripScreen(), // becomes the route named '/'
+    routes: <String, WidgetBuilder>{
       '/a': (BuildContext context) => ObservationScreen()
-    },*/
+    },
   ));
 }
 

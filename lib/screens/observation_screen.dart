@@ -10,6 +10,8 @@ class ObservationScreen extends StatefulWidget {
 }
 
 class ObservationScreenState extends State<ObservationScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   TravelObservatoryDb _travelObservatoryDb;
   TextEditingController sizeOfAnimalTextController;
   TextEditingController numOfAnimalsTextController;
@@ -49,75 +51,50 @@ class ObservationScreenState extends State<ObservationScreen> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text(
             "Observations",
             style: new TextStyle(color: Colors.white),
           ),
         ),
-        body: setContentView());
+        body: _buildList());
   }
 
-  Widget setContentView() {
+  Widget _buildList() {
     return Container(
       child: new Center(
         // Use future builder and DefaultAssetBundle to load the local JSON file
-        child: new FutureBuilder(
+        child: FutureBuilder(
             future: loadAsset(),
             builder: (context, snapshot) {
+              if (!snapshot.hasData) return LinearProgressIndicator();
+
               var tagsJson = jsonDecode(snapshot.data);
               tags = tagsJson != null ? List.from(tagsJson) : null;
 
-              print(tags.toString());
+              for (int i = 0; i < tags.length; i++) {
+                print(tags[i]);
+              }
 
               return new ListView.builder(
                   controller: _scrollController,
                   itemCount: tags == null ? 0 : tags.length,
                   itemBuilder: (BuildContext context, int index) {
-                    if (tags.length == 0) {
-                      return CircularProgressIndicator();
-                    } else {
-                      return Card(
-                        child: ListTile(
-                          title: Text(tags[index]['id'].toString()),
-                          subtitle: Text(tags[index]['animal'].toString()),
-                          onTap: () {
-                            _displayDialog(context, index);
-                          },
-                        ),
-                      );
-                    }
+                    return listItem(index);
                   });
             }),
       ),
     );
   }
 
-  Widget listLayout(List tags, int index) {
-    return new Card(
-      child: new Container(
-        child: new Center(
-            child: new Column(
-          // Stretch the cards in horizontal axis
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            new Text(
-              // Read the name field value and set it in the Text widget
-              tags[index]['id'].toString(),
-              // set some style to text
-              style:
-                  new TextStyle(fontSize: 20.0, color: Colors.lightBlueAccent),
-            ),
-            new Text(
-              // Read the name field value and set it in the Text widget
-              tags[index]['animal'].toString(),
-              // set some style to text
-              style:
-                  new TextStyle(fontSize: 20.0, color: Colors.lightBlueAccent),
-            ),
-          ],
-        )),
-        padding: const EdgeInsets.all(15.0),
+  Widget listItem(int index) {
+    return Card(
+      child: ListTile(
+        title: Text(tags[index]['animal'].toString()),
+        onTap: () {
+          _displayDialog(context, index);
+        },
       ),
     );
   }
@@ -170,11 +147,17 @@ class ObservationScreenState extends State<ObservationScreen> {
                 onPressed: () {
                   print(sizeOfAnimalTextController.text);
                   insertObservation();
-                  Navigator.of(context).pop();
+                  _showToast();
                 },
               )
             ],
           );
         });
+  }
+
+  void _showToast() {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text('Trip started'),
+    ));
   }
 }

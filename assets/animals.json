@@ -3,20 +3,29 @@
     "animal": "Dolphin"
 }, {
     "id": 1,
-    "animal": "Lion"
+    "animal": "Angelfish King"
 }, {
     "id": 2,
-    "animal": "Cat"
+    "animal": "Barracuda"
 }, {
     "id": 3,
-    "animal": "Snake"
+    "animal": "Viperfish"
 }, {
     "id": 4,
-    "animal": "Bird"
+    "animal": "Mexican lookdown"
 }, {
     "id": 5,
-    "animal": "Fish"
+    "animal": "Walrus"
 }, {
     "id": 6,
     "animal": "Dog"
+}, {
+    "id": 7,
+    "animal": "Shrimp"
+}, {
+    "id": 8,
+    "animal": "Shark"
+}, {
+    "id": 9,
+    "animal": "Whale"
 }]
