@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:travel_observatory/database/travel_observatory_db.dart';
 import 'package:travel_observatory/model/observation_model.dart';
 
-class ObservationScreen extends StatefulWidget {
+class ObservationRoute extends StatefulWidget {
   @override
-  ObservationScreenState createState() => new ObservationScreenState();
+  ObservationRouteState createState() => new ObservationRouteState();
 }
 
-class ObservationScreenState extends State<ObservationScreen> {
+class ObservationRouteState extends State<ObservationRoute> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   TravelObservatoryDb _travelObservatoryDb;

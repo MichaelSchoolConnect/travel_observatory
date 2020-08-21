@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:travel_observatory/screens/observation_screen.dart';
-import 'package:travel_observatory/screens/trip_screen.dart';
+import 'package:travel_observatory/screens/observation_route.dart';
+import 'package:travel_observatory/screens/trip_route.dart';
 
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: TripScreen(), // becomes the route named '/'
+    home: TripRoute(), // becomes the route named '/'
     routes: <String, WidgetBuilder>{
-      '/a': (BuildContext context) => ObservationScreen()
+      '/a': (BuildContext context) => ObservationRoute()
     },
   ));
 }
@@ -60,9 +60,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _myPages = <Widget>[
-      TripScreen(),
-      TripScreen(),
-      ObservationScreen()
+      TripRoute(),
+      TripRoute(),
+      ObservationRoute()
     ];
 
     return Scaffold(

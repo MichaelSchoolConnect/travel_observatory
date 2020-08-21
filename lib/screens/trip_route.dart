@@ -4,18 +4,18 @@ import 'package:travel_observatory/database/travel_observatory_db.dart';
 import 'package:travel_observatory/local_storage/save_file_locally.dart';
 import 'package:travel_observatory/location/get_gps_coordinates.dart';
 import 'package:travel_observatory/model/trip_model.dart';
-import 'package:travel_observatory/screens/observation_screen.dart';
+import 'package:travel_observatory/screens/observation_route.dart';
 
-class TripScreen extends StatefulWidget {
-  TripScreen({Key key, this.title}) : super(key: key);
+class TripRoute extends StatefulWidget {
+  TripRoute({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _TripScreenState createState() => _TripScreenState();
+  _TripRouteState createState() => _TripRouteState();
 }
 
-class _TripScreenState extends State<TripScreen> {
+class _TripRouteState extends State<TripRoute> {
   TravelObservatoryDb _travelObservatoryDb = new TravelObservatoryDb();
   //Save file in the local directory.
   SaveFileLocally saveFileLocally = new SaveFileLocally();
@@ -226,7 +226,7 @@ class _TripScreenState extends State<TripScreen> {
   void _goToObservationScreen() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ObservationScreen()),
+      MaterialPageRoute(builder: (context) => ObservationRoute()),
     );
   }
 }
