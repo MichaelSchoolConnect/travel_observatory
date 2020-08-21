@@ -39,10 +39,11 @@ class ObservationScreenState extends State<ObservationScreen> {
 
   @override
   void dispose() {
+    super.dispose();
     // Clean up the controller when the widget is disposed.
     sizeOfAnimalTextController.dispose();
     numOfAnimalsTextController.dispose();
-    super.dispose();
+    _scrollController.dispose();
   }
 
   @override
