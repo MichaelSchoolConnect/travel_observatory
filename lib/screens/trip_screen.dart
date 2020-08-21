@@ -97,14 +97,14 @@ class _TripScreenState extends State<TripScreen> {
         if (tripList.length == null) {
           return Center(child: Text('...'));
         } else {
-          return _listItem(position);
+          return _listItem(tripList, position);
         }
       },
     );
   }
 
   //build each item in the list
-  Widget _listItem(int position) {
+  Widget _listItem(List<Trip> tripList, int position) {
     return Card(
       color: Colors.white,
       elevation: 2.0,
