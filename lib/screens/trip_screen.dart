@@ -63,57 +63,65 @@ class _TripScreenState extends State<TripScreen> {
         // the App.build method, and use it to set our appbar title.
         title: Text('Trips'),
       ),
-      body: getTripListView(),
+      body: setContent(),
 
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           _saveTrip();
         },
         icon: Icon(Icons.save),
-        label: Text("Save trip"),
+        label: Text("Start trip"),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
-  ListView getTripListView() {
-    print('getTripListView');
+  ListView setContent() {
+    print('setting content');
     return ListView.builder(
       shrinkWrap: true,
       itemCount: count,
       itemBuilder: (BuildContext context, int position) {
-        return Card(
-          color: Colors.white,
-          elevation: 2.0,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.amber,
-              child: Text(getFirstLetter(this.tripList[position].date),
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            title: Text(this.tripList[position].time,
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: Text(this.tripList[position].gpsCoordinates),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                GestureDetector(
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                  ),
-                  onTap: () {
-                    //_delete(context, todoList[position]);
-                  },
-                ),
-              ],
-            ),
-            onTap: () {
-              debugPrint("ListTile Tapped");
-              // navigateToDetail(this.todoList[position], 'Edit Todo');
-            },
-          ),
-        );
+        if (tripList.length == 0) {
+          return CircularProgressIndicator();
+        } else {
+          return listItem(position);
+        }
       },
+    );
+  }
+
+  Widget listItem(int position) {
+    return Card(
+      color: Colors.white,
+      elevation: 2.0,
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: Colors.amber,
+          child: Text(getFirstLetter(this.tripList[position].date),
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        title: Text(this.tripList[position].time,
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(this.tripList[position].gpsCoordinates),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            GestureDetector(
+              child: Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+              onTap: () {
+                //_delete(context, todoList[position]);
+              },
+            ),
+          ],
+        ),
+        onTap: () {
+          debugPrint("ListTile Tapped");
+          // navigateToDetail(this.todoList[position], 'Edit Todo');
+        },
+      ),
     );
   }
 

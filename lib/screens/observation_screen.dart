@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:travel_observatory/database/travel_observatory_db.dart';
 import 'package:travel_observatory/model/observation_model.dart';
 
-import '../snackbar.dart';
-
 class ObservationScreen extends StatefulWidget {
   @override
   ObservationScreenState createState() => new ObservationScreenState();
@@ -16,6 +14,7 @@ class ObservationScreenState extends State<ObservationScreen> {
   TextEditingController sizeOfAnimalTextController;
   TextEditingController numOfAnimalsTextController;
 
+  ScrollController _scrollController;
   List tags;
 
   @override
@@ -24,6 +23,18 @@ class ObservationScreenState extends State<ObservationScreen> {
     _travelObservatoryDb = new TravelObservatoryDb();
     sizeOfAnimalTextController = TextEditingController();
     numOfAnimalsTextController = TextEditingController();
+
+    _scrollController = new ScrollController()..addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    print(_scrollController.position.extentAfter);
+    if (_scrollController.position.extentAfter == tags.length) {
+      setState(() {
+        //tags.addAll(new List.generate(42, (index) => 'Inserted $index'));
+        print('add more data here...');
+      });
+    }
   }
 
   @override
@@ -59,57 +70,24 @@ class ObservationScreenState extends State<ObservationScreen> {
               print(tags.toString());
 
               return new ListView.builder(
+                  controller: _scrollController,
                   itemCount: tags == null ? 0 : tags.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Card(
-                      child: ListTile(
-                        title: Text(tags[index]['id'].toString()),
-                        subtitle: Text(tags[index]['animal'].toString()),
-                        onTap: () {
-                          _displayDialog(context, index);
-                        },
-                      ),
-                    );
+                    if (tags.length == 0) {
+                      return CircularProgressIndicator();
+                    } else {
+                      return Card(
+                        child: ListTile(
+                          title: Text(tags[index]['id'].toString()),
+                          subtitle: Text(tags[index]['animal'].toString()),
+                          onTap: () {
+                            _displayDialog(context, index);
+                          },
+                        ),
+                      );
+                    }
                   });
             }),
-      ),
-    );
-  }
-
-  Widget _drawer() {
-    return Drawer(
-      // Add a ListView to the drawer. This ensures the user can scroll
-      // through the options in the drawer if there isn't enough vertical
-      // space to fit everything.
-      child: ListView(
-        // Important: Remove any padding from the ListView.
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: Text('Drawer Header'),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-          ),
-          ListTile(
-            title: Text('Item 1'),
-            onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: Text('Item 2'),
-            onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
-              Navigator.pop(context);
-            },
-          ),
-        ],
       ),
     );
   }
@@ -190,7 +168,7 @@ class ObservationScreenState extends State<ObservationScreen> {
                 child: new Text('Save'),
                 onPressed: () {
                   print(sizeOfAnimalTextController.text);
-                  SnackBarPage();
+                  insertObservation();
                   Navigator.of(context).pop();
                 },
               )
